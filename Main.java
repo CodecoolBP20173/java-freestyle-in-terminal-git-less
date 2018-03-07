@@ -40,15 +40,19 @@ public class Main {
         }
     }
 
+
     static int displayCircleForPlayerOne(String[][] frontTable, String[][] backTable, int step, String player) {
-        System.out.println(player + "'s turn! (Red)");
+        Terminal terminalControl = new Terminal();
+        terminalControl.moveTo(20, 95);
+        System.out.print(player + "'s turn! (Red)");
         Scanner reader = new Scanner(System.in);
         int columnToDrop;
         do {
-            System.out.println("Choose a column (1-7):");
+            terminalControl.moveTo(22, 95);
+            System.out.print("Choose a column (1-7):");
             while (!reader.hasNextInt()) {
-                System.out.println("That's not a number!");
-                System.out.println("Choose a column (1-7):");
+                System.out.print("That's not a number!");
+                System.out.print("Choose a column (1-7):");
                 reader.next();
             }
             columnToDrop = reader.nextInt();
@@ -62,21 +66,25 @@ public class Main {
                 break;
             }
             if (i == 0 && backTable[i][columnToDrop] != null) {
-                System.out.println("This column is full choose another one!");
+                System.out.print("This column is full, choose another one!");
             }
         }
         return step;
     }
 
+
     static int displayCircleForPlayerTwo(String[][] frontTable, String[][] backTable, int step, String player) {
-        System.out.println(player + "'s turn! (Blue)");
+        Terminal terminalControl = new Terminal();
+        terminalControl.moveTo(20, 95);
+        System.out.print(player + "'s turn! (Blue)");
         Scanner reader = new Scanner(System.in);
         int columnToDrop;
         do {
-            System.out.println("Choose a column (1-7):");
+            terminalControl.moveTo(22, 95);
+            System.out.print("Choose a column (1-7):");
             while (!reader.hasNextInt()) {
-                System.out.println("That's not a number!");
-                System.out.println("Choose a column (1-7):");
+                System.out.print("That's not a number!");
+                System.out.print("Choose a column (1-7):");
                 reader.next();
             }
             columnToDrop = reader.nextInt();
@@ -90,7 +98,7 @@ public class Main {
                 break;
             }
             if (i == 0 && backTable[i][columnToDrop] != null) {
-                System.out.println("This column is full choose another one!");
+                System.out.print("This column is full, choose another one!");
             }
         }
         return step;
@@ -145,15 +153,24 @@ public class Main {
     }
 
     public static int menu() {
-        System.out.println("Welcome to Connect Four!");
-        System.out.println("1. New Game \n2. Score Board \n3. Quit Game");
+        Terminal terminalControl = new Terminal();
+        terminalControl.moveTo(20, 95);
+        System.out.print("Welcome to Connect Four!");
+        terminalControl.moveTo(21, 95);
+        System.out.print("1. New Game");
+        terminalControl.moveTo(22, 95);
+        System.out.print("2. Score Board");
+        terminalControl.moveTo(23, 95);
+        System.out.print("3. Quit Game");
+        terminalControl.moveTo(24, 95);
+
         int menuPoint = 0;
         Scanner reader = new Scanner(System.in);
         do {
-            System.out.println("Choose a number:");
+            System.out.print("Choose a number:");
             while (!reader.hasNextInt()) {
-                System.out.println("That's not a number!");
-                System.out.println("Choose a number:");
+                System.out.print("That's not a number!");
+                System.out.print("Choose a number:");
                 reader.next();
             }
             menuPoint = reader.nextInt();
@@ -165,13 +182,13 @@ public class Main {
         Scanner reader = new Scanner(System.in);
         String restartOption;
         do {
-            System.out.println("Do you want to play again? Y/N");
+            System.out.print("Do you want to play again? Y/N");
             restartOption = reader.next();
         } while (!restartOption.equalsIgnoreCase("y") && !restartOption.equalsIgnoreCase("n"));
         return restartOption;
     }
   
-    static void displayNumber() {
+    static void displayNumbersOfColumns() {
         String[][] numbersToPrint = {
             {"  1", " 11", "1 1", "  1", "  1", " 111"},
             {" 22", "2  2", "   2", "  2", " 2", "2222"},
@@ -183,7 +200,7 @@ public class Main {
         };
         Terminal terminalControl = new Terminal();
         terminalControl.clearScreen();
-        terminalControl.setColor(Color.RED);
+        terminalControl.setColor(Color.CYAN);
         int X = 37;
         int Y = 15;
         for (int horizontal = 0; horizontal < numbersToPrint.length; horizontal++) {
@@ -193,9 +210,10 @@ public class Main {
                 System.out.print(numbersToPrint[horizontal][vertical]);
             }
         }
+        System.out.print("\033[0;0m");
     }
 
-    static void displayElemet(int x, int y, Color color) {
+    static void displayElement(int x, int y, Color color) {
         Terminal terminalControl = new Terminal();
         terminalControl.setBgColor(color);
         for (int j = 0; j < 3; j++) {
@@ -204,6 +222,7 @@ public class Main {
                 terminalControl.setChar(' ');
             }
         }
+        System.out.print("\033[0;0m");
     }
 
     static int[] frontendCoordinates(int x, int y) {
@@ -218,8 +237,25 @@ public class Main {
         return coordinates[x][y];
     }
 
+    static void printEverything(String[][] backTable) {
+        Terminal terminalControl = new Terminal();
+        terminalControl.clearScreen();
+        displayNumbersOfColumns();
+        for (int i = 0; i < backTable.length; i++) {
+            for (int j = 0; j < backTable[i].length; j++) {
+                if (backTable[i][j] == "B") {
+                    displayElement(frontendCoordinates(i, j)[0], frontendCoordinates(i, j)[1], Color.BLUE);
+                } else if (backTable[i][j] == "R") {
+                    displayElement(frontendCoordinates(i, j)[0], frontendCoordinates(i, j)[1], Color.RED);
+                }
+            }
+        }
+    }
+
     public static void main(String[] args) {
         while (true) {
+            Terminal terminalControl = new Terminal();
+            terminalControl.clearScreen();
             String[][] frontTable = createFrontTable();
             String[][] backTable = createBackTable();
             String redPlayer, bluePlayer;
@@ -232,24 +268,26 @@ public class Main {
             menuPoint = menu();
             if (menuPoint == 1) {
                 Scanner reader = new Scanner(System.in);
-                System.out.println("First Player enter your name:");
+                System.out.print("First Player enter your name:");
                 redPlayer = reader.next();
-                System.out.println("Second Player enter your name:");
+                System.out.print("Second Player enter your name:");
                 bluePlayer = reader.next();
-                printTable(frontTable);
+                printEverything(backTable);
                 while (true) {
                     if (step % 2 == 0 && winner == null) {
                         step = displayCircleForPlayerOne(frontTable, backTable, step, redPlayer);
-                        printTable(frontTable);
+                        printEverything(backTable);
                         winner = winCheck(backTable);
                     }
                     if (step % 2 == 1 && winner == null) {
                         step = displayCircleForPlayerTwo(frontTable, backTable, step, bluePlayer);
-                        printTable(frontTable);
+                        printEverything(backTable);
                         winner = winCheck(backTable);
                     }
                     if (step == lastTurn && winner == null) {
-                        System.out.println("Tie!");
+                        printEverything(backTable);
+                        terminalControl.moveTo(20, 95);
+                        System.out.print("Tie!");
                         restart = restart();
                             if (restart.equalsIgnoreCase("y"))
                             {
@@ -262,7 +300,9 @@ public class Main {
                     }
                     if (winner != null) {
                         if (winner == "R") {
-                            System.out.println(redPlayer + " won!");
+                            printEverything(backTable);
+                            terminalControl.moveTo(10, 95);
+                            System.out.print(redPlayer + " won!");
                             restart = restart();
                             if (restart.equalsIgnoreCase("y"))
                             {
@@ -274,7 +314,9 @@ public class Main {
                             }
                         }
                         if (winner == "B") {
-                            System.out.println(bluePlayer + " won!");
+                            printEverything(backTable);
+                            terminalControl.moveTo(10, 95);
+                            System.out.print(bluePlayer + " won!");
                             restart = restart();
                             if (restart.equalsIgnoreCase("y"))
                             {
@@ -290,7 +332,7 @@ public class Main {
                 }
             }
             if (menuPoint == 2) {
-                System.out.println("SCOREBOARD");
+                System.out.print("SCOREBOARD");
             }
             if (menuPoint == 3) {
                 System.exit(0);
