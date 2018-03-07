@@ -1,4 +1,8 @@
 import java.util.Scanner;
+import com.codecool.termlib.Terminal;
+import com.codecool.termlib.Color;
+import com.codecool.termlib.Direction;
+import com.codecool.termlib.Attribute;
 
 public class Main {
 
@@ -138,6 +142,53 @@ public class Main {
             }
         }
         return null;
+    }
+
+    static void displayNumber() {
+        String[][] numbersToPrint = {
+            {"  1", " 11", "1 1", "  1", "  1", " 111"},
+            {" 22", "2  2", "   2", "  2", " 2", "2222"},
+            {" 33", "3  3", "  3", "  3", "3  3", " 33"},
+            {"   4", "  44", " 4 4", "44444", "   4", "   4"},
+            {"5555", "5", "555", "   5", "   5", "555"},
+            {"   6", "  6", " 66", "6  6", "6  6", " 66"},
+            {"7777", "   7", "  7", " 7", "7", "7"}
+        };
+        Terminal terminalControl = new Terminal();
+        terminalControl.clearScreen();
+        terminalControl.setColor(Color.RED);
+        int X = 37;
+        int Y = 15;
+        for (int horizontal = 0; horizontal < numbersToPrint.length; horizontal++) {
+            int nextNumberY = horizontal * 10;
+            for (int vertical = 0; vertical < 6; vertical++) {
+                terminalControl.moveTo(X + vertical, Y + nextNumberY);
+                System.out.print(numbersToPrint[horizontal][vertical]);
+            }
+        }
+    }
+
+    static void displayElemet(int x, int y, Color color) {
+        Terminal terminalControl = new Terminal();
+        terminalControl.setBgColor(color);
+        for (int j = 0; j < 3; j++) {
+            terminalControl.moveTo(x + j, y);
+            for (int i = 0; i < 5; i++) {
+                terminalControl.setChar(' ');
+            }
+        }
+    }
+
+    static int[] frontendCoordinates(int x, int y) {
+        int[][][] coordinates = {
+            {{7, 15}, {7, 25}, {7, 35}, {7, 45}, {7, 55}, {7, 65}, {7, 75}},
+            {{12, 15}, {12, 25}, {12, 35}, {12, 45}, {12, 55}, {12, 65}, {12, 75}},
+            {{17, 15}, {17, 25}, {17, 35}, {17, 45}, {17, 55}, {17, 65}, {17, 75}},
+            {{22, 15}, {22, 25}, {22, 35}, {22, 45}, {22, 55}, {22, 65}, {22, 75}},
+            {{27, 15}, {27, 25}, {27, 35}, {27, 45}, {27, 55}, {27, 65}, {27, 75}},
+            {{32, 15}, {32, 25}, {32, 35}, {32, 45}, {32, 55}, {32, 65}, {32, 75}}
+        };
+        return coordinates[x][y];
     }
 
     public static void main(String[] args) {
