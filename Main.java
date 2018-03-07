@@ -144,6 +144,39 @@ public class Main {
         return null;
     }
 
+    public static int menu() {
+        System.out.println("Welcome to Connect Four!");
+        System.out.println("1. New Game \n2. Score Board");
+        int menuPoint = 0;
+        Scanner reader = new Scanner(System.in);
+        do {
+            System.out.println("Choose a number:");
+            while (!reader.hasNextInt()) {
+                System.out.println("That's not a number!");
+                System.out.println("Choose a number:");
+                reader.next();
+            }
+            menuPoint = reader.nextInt();
+        } while (menuPoint <= 0 || menuPoint >= 3);
+        return menuPoint;
+    }
+
+    public static String restart() {
+        System.out.println("Do you want to play again? Y/N");
+        Scanner reader = new Scanner(System.in);
+        String restartOption;
+        do {
+            System.out.println("Do you want to play again? Y/N");
+            while (!reader.hasNext()) {
+                System.out.println("Wrong Input!");
+                System.out.println("Do you want to play again? Y/N");
+                reader.next();
+            }
+            restartOption = reader.next();
+        } while (restartOption != "Y" || restartOption != "y" || restartOption != "N" || restartOption != "n");
+        return restartOption;
+    }
+  
     static void displayNumber() {
         String[][] numbersToPrint = {
             {"  1", " 11", "1 1", "  1", "  1", " 111"},
@@ -192,25 +225,45 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        String[][] frontTable = createFrontTable();
-        String[][] backTable = createBackTable();
-        int step = 0;
         while (true) {
-            if (step % 2 == 0) {
-                step = displayCircleForPlayerOne(frontTable, backTable, step);
+            String[][] frontTable = createFrontTable();
+            String[][] backTable = createBackTable();
+            int step = 0;
+            int lastTurn = 42;
+            int menuPoint = 0;
+            String winner = null;
+
+            menuPoint = menu();
+            if (menuPoint == 1) {
                 printTable(frontTable);
-                String asd = winCheck(backTable);
-                System.out.println(asd);
+                while (true) {
+                    if (step % 2 == 0 && winner == null) {
+                        step = displayCircleForPlayerOne(frontTable, backTable, step);
+                        printTable(frontTable);
+                        winner = winCheck(backTable);
+                    }
+                    if (step % 2 == 1 && winner == null) {
+                        step = displayCircleForPlayerTwo(frontTable, backTable, step);
+                        printTable(frontTable);
+                        winner = winCheck(backTable);
+                    }
+                    if (step == lastTurn && winner == null) {
+                        System.out.println("Tie!");
+                        break;
+                    }
+                    if (winner != null) {
+                        if (winner == "R") {
+                            System.out.println("Red won!");
+                        }
+                        if (winner == "B") {
+                            System.out.println("Blue won!");
+                        }
+                        break;
+                    }
+                }
             }
-            if (step % 2 == 1) {
-                step = displayCircleForPlayerTwo(frontTable, backTable, step);
-                printTable(frontTable);
-                String asd = winCheck(backTable);
-                System.out.println(asd);
-            }
-            if (step == 42) {
-                System.out.println("Tie!");
-                break;
+            if (menuPoint == 2) {
+                System.out.println("SCOREBOARD");
             }
         }
     }
