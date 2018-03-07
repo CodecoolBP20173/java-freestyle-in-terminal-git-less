@@ -36,14 +36,7 @@ public class Main {
         }
     }
 
-    static int chooseColumn() {
-        Scanner reader = new Scanner(System.in);
-        reader.close();
-        int move = 0;
-        return move;
-    }
-
-    static void displayCircleForPlayerOne(String[][] table) {
+    static int displayCircleForPlayerOne(String[][] frontTable, String[][] backTable, int step) {
         System.out.println("Red Player's turn!");
         Scanner reader = new Scanner(System.in);
         int columnToDrop;
@@ -58,14 +51,20 @@ public class Main {
         } while (columnToDrop <= 0 || columnToDrop >= 8);
         --columnToDrop;
         for (int i = 5; i >= 0; i--) {
-            if (table[i][columnToDrop] == "::") {
-                table[i][columnToDrop] = "R ";
+            if (backTable[i][columnToDrop] == null) {
+                backTable[i][columnToDrop] = "R";
+                frontTable[i][columnToDrop] = "R ";
+                step++;
                 break;
             }
+            if (i == 0 && backTable[i][columnToDrop] != null) {
+                System.out.println("This column is full choose another one!");
+            }
         }
+        return step;
     }
 
-    static void displayCircleForPlayerTwo(String[][] table) {
+    static int displayCircleForPlayerTwo(String[][] frontTable, String[][] backTable, int step) {
         System.out.println("Blue Player's turn!");
         Scanner reader = new Scanner(System.in);
         int columnToDrop;
@@ -80,39 +79,88 @@ public class Main {
         } while (columnToDrop <= 0 || columnToDrop >= 8);
         --columnToDrop;
         for (int i = 5; i >= 0; i--) {
-            if (table[i][columnToDrop] == "::") {
-                table[i][columnToDrop] = "B ";
+            if (backTable[i][columnToDrop] == null) {
+                backTable[i][columnToDrop] = "B";
+                frontTable[i][columnToDrop] = "B ";
+                step++;
                 break;
             }
+            if (i == 0 && backTable[i][columnToDrop] != null) {
+                System.out.println("This column is full choose another one!");
+            }
         }
+        return step;
     }
 
-    static boolean winCheck() {
-        boolean isTrue = false;
-        return isTrue;
+    static String winCheck(String[][] backTable) {
+        //Horizontal Check
+        for (int i = 0; i < 6; i++) {
+            for (int j = 0; j < 4; j++) {
+                if ((backTable[i][j] != null) && (backTable[i][j + 1] != null) && (backTable[i][j + 2] != null)
+                        && (backTable[i][j + 3] != null) && (backTable[i][j] == backTable[i][j + 1])
+                        && (backTable[i][j + 1] == backTable[i][j + 2])
+                        && (backTable[i][j + 2] == backTable[i][j + 3])) {
+                    return backTable[i][j];
+                }
+            }
+        }
+        //Vertical Check
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 7; j++) {
+                if ((backTable[i][j] != null) && (backTable[i + 1][j] != null) && (backTable[i + 2][j] != null)
+                        && (backTable[i + 3][j] != null) && (backTable[i][j] == backTable[i + 1][j])
+                        && (backTable[i + 1][j] == backTable[i + 2][j])
+                        && (backTable[i + 2][j] == backTable[i + 3][j])) {
+                    return backTable[i][j];
+                }
+            }
+        }
+        //Diagonal Check (Left-Up to Right-Down)
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 4; j++) {
+                if ((backTable[i][j] != null) && (backTable[i + 1][j + 1] != null) && (backTable[i + 2][j + 2] != null)
+                        && (backTable[i + 3][j + 3] != null) && (backTable[i][j] == backTable[i + 1][j + 1])
+                        && (backTable[i + 1][j + 1] == backTable[i + 2][j + 2])
+                        && (backTable[i + 2][j + 2] == backTable[i + 3][j + 3])) {
+                    return backTable[i][j];
+                }
+            }
+        }
+        //Diagonal Check (Right-Up to Left-Down)
+        for (int i = 0; i < 3; i++) {
+            for (int j = 3; j < 7; j++) {
+                if ((backTable[i][j] != null) && (backTable[i + 1][j - 1] != null) && (backTable[i + 2][j - 2] != null)
+                        && (backTable[i + 3][j - 3] != null) && (backTable[i][j] == backTable[i + 1][j - 1])
+                        && (backTable[i + 1][j - 1] == backTable[i + 2][j - 2])
+                        && (backTable[i + 2][j - 2] == backTable[i + 3][j - 3])) {
+                    return backTable[i][j];
+                }
+            }
+        }
+        return null;
     }
 
     public static void main(String[] args) {
         String[][] frontTable = createFrontTable();
         String[][] backTable = createBackTable();
-        printTable(frontTable);
-        System.out.print("\n");
-        printTable(backTable);
-        displayCircleForPlayerOne(frontTable);
-        printTable(frontTable);
-        displayCircleForPlayerTwo(frontTable);
-        printTable(frontTable);
-        displayCircleForPlayerOne(frontTable);
-        printTable(frontTable);
-        displayCircleForPlayerTwo(frontTable);
-        printTable(frontTable);
-        displayCircleForPlayerOne(frontTable);
-        printTable(frontTable);
-        displayCircleForPlayerTwo(frontTable);
-        printTable(frontTable);
-        displayCircleForPlayerOne(frontTable);
-        printTable(frontTable);
-        displayCircleForPlayerTwo(frontTable);
-        printTable(frontTable);
+        int step = 0;
+        while (true) {
+            if (step % 2 == 0) {
+                step = displayCircleForPlayerOne(frontTable, backTable, step);
+                printTable(frontTable);
+                String asd = winCheck(backTable);
+                System.out.println(asd);
+            }
+            if (step % 2 == 1) {
+                step = displayCircleForPlayerTwo(frontTable, backTable, step);
+                printTable(frontTable);
+                String asd = winCheck(backTable);
+                System.out.println(asd);
+            }
+            if (step == 42) {
+                System.out.println("Tie!");
+                break;
+            }
+        }
     }
 }
