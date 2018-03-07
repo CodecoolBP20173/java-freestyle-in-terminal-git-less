@@ -162,18 +162,12 @@ public class Main {
     }
 
     public static String restart() {
-        System.out.println("Do you want to play again? Y/N");
         Scanner reader = new Scanner(System.in);
         String restartOption;
         do {
             System.out.println("Do you want to play again? Y/N");
-            while (!reader.hasNext()) {
-                System.out.println("Wrong Input!");
-                System.out.println("Do you want to play again? Y/N");
-                reader.next();
-            }
             restartOption = reader.next();
-        } while (restartOption != "Y" || restartOption != "y" || restartOption != "N" || restartOption != "n");
+        } while (!restartOption.equalsIgnoreCase("y") && !restartOption.equalsIgnoreCase("n"));
         return restartOption;
     }
   
@@ -230,6 +224,7 @@ public class Main {
             String[][] backTable = createBackTable();
             int step = 0;
             int lastTurn = 42;
+            String restart = "";
             int menuPoint = 0;
             String winner = null;
 
@@ -249,14 +244,40 @@ public class Main {
                     }
                     if (step == lastTurn && winner == null) {
                         System.out.println("Tie!");
-                        break;
+                        restart = restart();
+                            if (restart.equalsIgnoreCase("y"))
+                            {
+                                break;
+                            }
+                            if (restart.equalsIgnoreCase("n"))
+                            {
+                                System.exit(0);
+                            }
                     }
                     if (winner != null) {
                         if (winner == "R") {
                             System.out.println("Red won!");
+                            restart = restart();
+                            if (restart.equalsIgnoreCase("y"))
+                            {
+                                break;
+                            }
+                            if (restart.equalsIgnoreCase("n"))
+                            {
+                                System.exit(0);
+                            }
                         }
                         if (winner == "B") {
                             System.out.println("Blue won!");
+                            restart = restart();
+                            if (restart.equalsIgnoreCase("y"))
+                            {
+                                break;
+                            }
+                            if (restart.equalsIgnoreCase("n"))
+                            {
+                                System.exit(0);
+                            }
                         }
                         break;
                     }
