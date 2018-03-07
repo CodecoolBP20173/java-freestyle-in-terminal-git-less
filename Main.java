@@ -40,8 +40,8 @@ public class Main {
         }
     }
 
-    static int displayCircleForPlayerOne(String[][] frontTable, String[][] backTable, int step) {
-        System.out.println("Red Player's turn!");
+    static int displayCircleForPlayerOne(String[][] frontTable, String[][] backTable, int step, String player) {
+        System.out.println(player + "'s turn! (Red)");
         Scanner reader = new Scanner(System.in);
         int columnToDrop;
         do {
@@ -68,8 +68,8 @@ public class Main {
         return step;
     }
 
-    static int displayCircleForPlayerTwo(String[][] frontTable, String[][] backTable, int step) {
-        System.out.println("Blue Player's turn!");
+    static int displayCircleForPlayerTwo(String[][] frontTable, String[][] backTable, int step, String player) {
+        System.out.println(player + "'s turn! (Blue)");
         Scanner reader = new Scanner(System.in);
         int columnToDrop;
         do {
@@ -146,7 +146,7 @@ public class Main {
 
     public static int menu() {
         System.out.println("Welcome to Connect Four!");
-        System.out.println("1. New Game \n2. Score Board");
+        System.out.println("1. New Game \n2. Score Board \n3. Quit Game");
         int menuPoint = 0;
         Scanner reader = new Scanner(System.in);
         do {
@@ -157,7 +157,7 @@ public class Main {
                 reader.next();
             }
             menuPoint = reader.nextInt();
-        } while (menuPoint <= 0 || menuPoint >= 3);
+        } while (menuPoint <= 0 || menuPoint >= 4);
         return menuPoint;
     }
 
@@ -222,6 +222,7 @@ public class Main {
         while (true) {
             String[][] frontTable = createFrontTable();
             String[][] backTable = createBackTable();
+            String redPlayer, bluePlayer;
             int step = 0;
             int lastTurn = 42;
             String restart = "";
@@ -230,15 +231,20 @@ public class Main {
 
             menuPoint = menu();
             if (menuPoint == 1) {
+                Scanner reader = new Scanner(System.in);
+                System.out.println("First Player enter your name:");
+                redPlayer = reader.next();
+                System.out.println("Second Player enter your name:");
+                bluePlayer = reader.next();
                 printTable(frontTable);
                 while (true) {
                     if (step % 2 == 0 && winner == null) {
-                        step = displayCircleForPlayerOne(frontTable, backTable, step);
+                        step = displayCircleForPlayerOne(frontTable, backTable, step, redPlayer);
                         printTable(frontTable);
                         winner = winCheck(backTable);
                     }
                     if (step % 2 == 1 && winner == null) {
-                        step = displayCircleForPlayerTwo(frontTable, backTable, step);
+                        step = displayCircleForPlayerTwo(frontTable, backTable, step, bluePlayer);
                         printTable(frontTable);
                         winner = winCheck(backTable);
                     }
@@ -256,7 +262,7 @@ public class Main {
                     }
                     if (winner != null) {
                         if (winner == "R") {
-                            System.out.println("Red won!");
+                            System.out.println(redPlayer + " won!");
                             restart = restart();
                             if (restart.equalsIgnoreCase("y"))
                             {
@@ -268,7 +274,7 @@ public class Main {
                             }
                         }
                         if (winner == "B") {
-                            System.out.println("Blue won!");
+                            System.out.println(bluePlayer + " won!");
                             restart = restart();
                             if (restart.equalsIgnoreCase("y"))
                             {
@@ -285,6 +291,9 @@ public class Main {
             }
             if (menuPoint == 2) {
                 System.out.println("SCOREBOARD");
+            }
+            if (menuPoint == 3) {
+                System.exit(0);
             }
         }
     }
