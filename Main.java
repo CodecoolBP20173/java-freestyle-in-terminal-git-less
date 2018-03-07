@@ -40,10 +40,11 @@ public class Main {
         }
     }
 
-    static int displayCircleForPlayerOne(String[][] frontTable, String[][] backTable, int step) {
+
+    static int displayCircleForPlayerOne(String[][] frontTable, String[][] backTable, int step, String player) {
         Terminal terminalControl = new Terminal();
         terminalControl.moveTo(20, 95);
-        System.out.print("Red Player's turn!");
+        System.out.print(player + "'s turn! (Red)");
         Scanner reader = new Scanner(System.in);
         int columnToDrop;
         do {
@@ -71,10 +72,11 @@ public class Main {
         return step;
     }
 
-    static int displayCircleForPlayerTwo(String[][] frontTable, String[][] backTable, int step) {
+
+    static int displayCircleForPlayerTwo(String[][] frontTable, String[][] backTable, int step, String player) {
         Terminal terminalControl = new Terminal();
         terminalControl.moveTo(20, 95);
-        System.out.print("Blue Player's turn!");
+        System.out.print(player + "'s turn! (Blue)");
         Scanner reader = new Scanner(System.in);
         int columnToDrop;
         do {
@@ -159,6 +161,9 @@ public class Main {
         terminalControl.moveTo(22, 95);
         System.out.print("2. Score Board");
         terminalControl.moveTo(23, 95);
+        System.out.print("3. Quit Game");
+        terminalControl.moveTo(24, 95);
+
         int menuPoint = 0;
         Scanner reader = new Scanner(System.in);
         do {
@@ -169,23 +174,17 @@ public class Main {
                 reader.next();
             }
             menuPoint = reader.nextInt();
-        } while (menuPoint <= 0 || menuPoint >= 3);
+        } while (menuPoint <= 0 || menuPoint >= 4);
         return menuPoint;
     }
 
     public static String restart() {
-        System.out.print("Do you want to play again? Y/N");
         Scanner reader = new Scanner(System.in);
         String restartOption;
         do {
             System.out.print("Do you want to play again? Y/N");
-            while (!reader.hasNext()) {
-                System.out.print("Wrong Input!");
-                System.out.print("Do you want to play again? Y/N");
-                reader.next();
-            }
             restartOption = reader.next();
-        } while (restartOption != "Y" || restartOption != "y" || restartOption != "N" || restartOption != "n");
+        } while (!restartOption.equalsIgnoreCase("y") && !restartOption.equalsIgnoreCase("n"));
         return restartOption;
     }
   
@@ -259,22 +258,29 @@ public class Main {
             terminalControl.clearScreen();
             String[][] frontTable = createFrontTable();
             String[][] backTable = createBackTable();
+            String redPlayer, bluePlayer;
             int step = 0;
             int lastTurn = 42;
+            String restart = "";
             int menuPoint = 0;
             String winner = null;
 
             menuPoint = menu();
             if (menuPoint == 1) {
+                Scanner reader = new Scanner(System.in);
+                System.out.print("First Player enter your name:");
+                redPlayer = reader.next();
+                System.out.print("Second Player enter your name:");
+                bluePlayer = reader.next();
                 printEverything(backTable);
                 while (true) {
                     if (step % 2 == 0 && winner == null) {
-                        step = displayCircleForPlayerOne(frontTable, backTable, step);
+                        step = displayCircleForPlayerOne(frontTable, backTable, step, redPlayer);
                         printEverything(backTable);
                         winner = winCheck(backTable);
                     }
                     if (step % 2 == 1 && winner == null) {
-                        step = displayCircleForPlayerTwo(frontTable, backTable, step);
+                        step = displayCircleForPlayerTwo(frontTable, backTable, step, bluePlayer);
                         printEverything(backTable);
                         winner = winCheck(backTable);
                     }
@@ -282,18 +288,44 @@ public class Main {
                         printEverything(backTable);
                         terminalControl.moveTo(20, 95);
                         System.out.print("Tie!");
-                        break;
+                        restart = restart();
+                            if (restart.equalsIgnoreCase("y"))
+                            {
+                                break;
+                            }
+                            if (restart.equalsIgnoreCase("n"))
+                            {
+                                System.exit(0);
+                            }
                     }
                     if (winner != null) {
                         if (winner == "R") {
                             printEverything(backTable);
                             terminalControl.moveTo(10, 95);
-                            System.out.print("Red won!");
+                            System.out.print(redPlayer + " won!");
+                            restart = restart();
+                            if (restart.equalsIgnoreCase("y"))
+                            {
+                                break;
+                            }
+                            if (restart.equalsIgnoreCase("n"))
+                            {
+                                System.exit(0);
+                            }
                         }
                         if (winner == "B") {
                             printEverything(backTable);
                             terminalControl.moveTo(10, 95);
-                            System.out.print("Blue won!");
+                            System.out.print(bluePlayer + " won!");
+                            restart = restart();
+                            if (restart.equalsIgnoreCase("y"))
+                            {
+                                break;
+                            }
+                            if (restart.equalsIgnoreCase("n"))
+                            {
+                                System.exit(0);
+                            }
                         }
                         break;
                     }
@@ -301,6 +333,9 @@ public class Main {
             }
             if (menuPoint == 2) {
                 System.out.print("SCOREBOARD");
+            }
+            if (menuPoint == 3) {
+                System.exit(0);
             }
         }
     }
