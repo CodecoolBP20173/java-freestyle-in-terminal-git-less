@@ -41,14 +41,14 @@ public class Main {
     }
 
     static int displayCircleForPlayerOne(String[][] frontTable, String[][] backTable, int step) {
-        System.out.println("Red Player's turn!");
+        System.out.print("Red Player's turn!");
         Scanner reader = new Scanner(System.in);
         int columnToDrop;
         do {
-            System.out.println("Choose a column (1-7):");
+            System.out.print("Choose a column (1-7):");
             while (!reader.hasNextInt()) {
-                System.out.println("That's not a number!");
-                System.out.println("Choose a column (1-7):");
+                System.out.print("That's not a number!");
+                System.out.print("Choose a column (1-7):");
                 reader.next();
             }
             columnToDrop = reader.nextInt();
@@ -145,15 +145,21 @@ public class Main {
     }
 
     public static int menu() {
-        System.out.println("Welcome to Connect Four!");
-        System.out.println("1. New Game \n2. Score Board");
+        Terminal terminalControl = new Terminal();
+        terminalControl.moveTo(20, 95);
+        System.out.print("Welcome to Connect Four!");
+        terminalControl.moveTo(21, 95);
+        System.out.print("1. New Game");
+        terminalControl.moveTo(22, 95);
+        System.out.print("2. Score Board");
+        terminalControl.moveTo(23, 95);
         int menuPoint = 0;
         Scanner reader = new Scanner(System.in);
         do {
-            System.out.println("Choose a number:");
+            System.out.print("Choose a number:");
             while (!reader.hasNextInt()) {
-                System.out.println("That's not a number!");
-                System.out.println("Choose a number:");
+                System.out.print("That's not a number!");
+                System.out.print("Choose a number:");
                 reader.next();
             }
             menuPoint = reader.nextInt();
@@ -162,14 +168,14 @@ public class Main {
     }
 
     public static String restart() {
-        System.out.println("Do you want to play again? Y/N");
+        System.out.print("Do you want to play again? Y/N");
         Scanner reader = new Scanner(System.in);
         String restartOption;
         do {
-            System.out.println("Do you want to play again? Y/N");
+            System.out.print("Do you want to play again? Y/N");
             while (!reader.hasNext()) {
-                System.out.println("Wrong Input!");
-                System.out.println("Do you want to play again? Y/N");
+                System.out.print("Wrong Input!");
+                System.out.print("Do you want to play again? Y/N");
                 reader.next();
             }
             restartOption = reader.next();
@@ -177,7 +183,7 @@ public class Main {
         return restartOption;
     }
   
-    static void displayNumber() {
+    static void displayNumbersOfColumns() {
         String[][] numbersToPrint = {
             {"  1", " 11", "1 1", "  1", "  1", " 111"},
             {" 22", "2  2", "   2", "  2", " 2", "2222"},
@@ -199,9 +205,10 @@ public class Main {
                 System.out.print(numbersToPrint[horizontal][vertical]);
             }
         }
+        terminalControl.setColor(Color.BLACK);
     }
 
-    static void displayElemet(int x, int y, Color color) {
+    static void displayElement(int x, int y, Color color) {
         Terminal terminalControl = new Terminal();
         terminalControl.setBgColor(color);
         for (int j = 0; j < 3; j++) {
@@ -210,6 +217,7 @@ public class Main {
                 terminalControl.setChar(' ');
             }
         }
+        terminalControl.setBgColor(Color.BLACK);
     }
 
     static int[] frontendCoordinates(int x, int y) {
@@ -224,8 +232,25 @@ public class Main {
         return coordinates[x][y];
     }
 
+    static void printEverything(String[][] backTable) {
+        Terminal terminalControl = new Terminal();
+        terminalControl.clearScreen();
+        displayNumbersOfColumns();
+        for (int i = 0; i < backTable.length; i++) {
+            for (int j = 0; j < backTable[i].length; j++) {
+                if (backTable[i][j] == "B") {
+                    displayElement(frontendCoordinates(i, j)[0], frontendCoordinates(i, j)[1], Color.BLUE);
+                } else if (backTable[i][j] == "R") {
+                    displayElement(frontendCoordinates(i, j)[0], frontendCoordinates(i, j)[1], Color.RED);
+                }
+            }
+        }
+    }
+
     public static void main(String[] args) {
         while (true) {
+            Terminal terminalControl = new Terminal();
+            terminalControl.clearScreen();
             String[][] frontTable = createFrontTable();
             String[][] backTable = createBackTable();
             int step = 0;
@@ -235,16 +260,18 @@ public class Main {
 
             menuPoint = menu();
             if (menuPoint == 1) {
-                printTable(frontTable);
+                printEverything(backTable);
                 while (true) {
                     if (step % 2 == 0 && winner == null) {
                         step = displayCircleForPlayerOne(frontTable, backTable, step);
-                        printTable(frontTable);
+                        //printTable(frontTable);
+                        printEverything(backTable);
                         winner = winCheck(backTable);
                     }
                     if (step % 2 == 1 && winner == null) {
                         step = displayCircleForPlayerTwo(frontTable, backTable, step);
-                        printTable(frontTable);
+                        //printTable(frontTable);
+                        printEverything(backTable);
                         winner = winCheck(backTable);
                     }
                     if (step == lastTurn && winner == null) {
