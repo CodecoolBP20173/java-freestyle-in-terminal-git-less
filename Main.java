@@ -1,3 +1,4 @@
+import java.io.BufferedWriter;
 import java.util.Scanner;
 import java.io.File;
 import java.io.FileWriter;
@@ -8,6 +9,7 @@ import java.util.List;
 import java.io.BufferedWriter;
 import java.lang.StringBuilder;
 import com.codecool.termlib.Terminal;
+
 import com.codecool.termlib.Color;
 import com.codecool.termlib.Direction;
 import com.codecool.termlib.Attribute;
@@ -31,6 +33,11 @@ public class Main {
 
     static String[][] createBackTable() {
         String[][] backTable = new String[6][7];
+        //for (int i = 0; i < backTable.length; i++) {
+        //    for (int j = 0; j < backTable[i].length; j++) {
+        //        backTable[i][j] = "not_null";
+        //    }
+        //}
 
         return backTable;
     }
@@ -56,10 +63,10 @@ public class Main {
         int columnToDrop;
         do {
             terminalControl.moveTo(22, 95);
-            System.out.print("Choose a column (1-7):");
+            System.out.print("Choose a column (1-7): ");
             while (!reader.hasNextInt()) {
                 System.out.print("That's not a number!");
-                System.out.print("Choose a column (1-7):");
+                System.out.print("Choose a column (1-7): ");
                 reader.next();
             }
             columnToDrop = reader.nextInt();
@@ -67,6 +74,9 @@ public class Main {
         --columnToDrop;
         for (int i = 5; i >= 0; i--) {
             if (backTable[i][columnToDrop] == null) {
+                int coordinateY = (columnToDrop * 10) + 15;
+                int columnCoordinate = columnToDrop -1;
+                moveNewElement(Color.RED, coordinateY, columnToDrop, backTable);
                 backTable[i][columnToDrop] = "R";
                 frontTable[i][columnToDrop] = "R ";
                 step++;
@@ -79,6 +89,34 @@ public class Main {
         return step;
     }
 
+    static void moveNewElement(Color color, int coordinateY, int columnCoordinate, String[][] backTable) {
+        Terminal terminalControl = new Terminal();
+        int nextEmptySlot = 5;
+        for (int i = 0; i < backTable.length; i++) {
+            if (backTable[i][columnCoordinate] != null && !backTable[i][columnCoordinate].isEmpty()) {
+                nextEmptySlot = i - 1;
+                break;
+            } 
+        }
+        int[] xCoordinatesList = {7, 12, 17, 22, 27, 32};
+        int xGoal = xCoordinatesList[nextEmptySlot];
+        int x = 2;
+        while (x <= xGoal-2) {
+            System.out.print("\033[?25l");
+            displayElement(x, coordinateY, color);
+            try{
+                Thread.sleep(40);
+            } catch (Exception e){}
+            terminalControl.moveTo(x, coordinateY);
+            System.out.print("\033[0;0m");
+            for (int i = 0; i < 5; i++) {
+                terminalControl.setChar(' ');
+            }
+            x += 1;
+        }
+        System.out.print("\033[?25h");
+    }
+
     static int displayCircleForPlayerTwo(String[][] frontTable, String[][] backTable, int step, String player) {
         Terminal terminalControl = new Terminal();
         terminalControl.moveTo(20, 95);
@@ -87,10 +125,10 @@ public class Main {
         int columnToDrop;
         do {
             terminalControl.moveTo(22, 95);
-            System.out.print("Choose a column (1-7):");
+            System.out.print("Choose a column (1-7): ");
             while (!reader.hasNextInt()) {
                 System.out.print("That's not a number!");
-                System.out.print("Choose a column (1-7):");
+                System.out.print("Choose a column (1-7): ");
                 reader.next();
             }
             columnToDrop = reader.nextInt();
@@ -98,6 +136,9 @@ public class Main {
         --columnToDrop;
         for (int i = 5; i >= 0; i--) {
             if (backTable[i][columnToDrop] == null) {
+                int coordinateY = (columnToDrop * 10) + 15;
+                int columnCoordinate = columnToDrop -1;
+                moveNewElement(Color.BLUE, coordinateY, columnToDrop, backTable);
                 backTable[i][columnToDrop] = "B";
                 frontTable[i][columnToDrop] = "B ";
                 step++;
@@ -110,6 +151,31 @@ public class Main {
         return step;
     }
 
+    static void flashElements(int[][] elementsCoordinates) {
+        int[][] frontendCoordinatesToFlash = new int [4][2];
+        for (int i = 0; i < elementsCoordinates.length; i++) {
+            frontendCoordinatesToFlash[i] = frontendCoordinates(elementsCoordinates[i][0], elementsCoordinates[i][1]);
+        }
+        int loop = 0;
+        Color flashColor = Color.GREEN;
+        while (loop < 5) {
+            System.out.print("\033[?25l");
+            for (int i = 0; i < frontendCoordinatesToFlash.length; i++) {
+                displayElement(frontendCoordinatesToFlash[i][0], frontendCoordinatesToFlash[i][1], flashColor);
+            }
+            try{
+                Thread.sleep(700);
+            } catch (Exception e){}
+            if (flashColor == Color.GREEN) {
+                flashColor = Color.YELLOW;
+            } else {
+                flashColor = Color.GREEN;
+            }
+            loop += 1;
+        }
+        System.out.print("\033[?25h");
+    }
+
     static String winCheck(String[][] backTable) {
         //Horizontal Check
         for (int i = 0; i < 6; i++) {
@@ -118,6 +184,10 @@ public class Main {
                         && (backTable[i][j + 3] != null) && (backTable[i][j] == backTable[i][j + 1])
                         && (backTable[i][j + 1] == backTable[i][j + 2])
                         && (backTable[i][j + 2] == backTable[i][j + 3])) {
+                        int[][] elementsToFlashList = {
+                            {i, j}, {i, j + 1}, {i, j + 2}, {i, j + 3}
+                        };
+                        flashElements(elementsToFlashList);
                     return backTable[i][j];
                 }
             }
@@ -129,6 +199,10 @@ public class Main {
                         && (backTable[i + 3][j] != null) && (backTable[i][j] == backTable[i + 1][j])
                         && (backTable[i + 1][j] == backTable[i + 2][j])
                         && (backTable[i + 2][j] == backTable[i + 3][j])) {
+                            int[][] elementsToFlashList = {
+                                {i + 3, j}, {i + 2, j}, {i + 1, j}, {i, j}
+                            };
+                            flashElements(elementsToFlashList);    
                     return backTable[i][j];
                 }
             }
@@ -140,6 +214,10 @@ public class Main {
                         && (backTable[i + 3][j + 3] != null) && (backTable[i][j] == backTable[i + 1][j + 1])
                         && (backTable[i + 1][j + 1] == backTable[i + 2][j + 2])
                         && (backTable[i + 2][j + 2] == backTable[i + 3][j + 3])) {
+                            int[][] elementsToFlashList = {
+                                {i + 3, j + 3}, {i + 2, j + 2}, {i + 1, j + 1}, {i, j}
+                            };
+                            flashElements(elementsToFlashList);
                     return backTable[i][j];
                 }
             }
@@ -151,6 +229,10 @@ public class Main {
                         && (backTable[i + 3][j - 3] != null) && (backTable[i][j] == backTable[i + 1][j - 1])
                         && (backTable[i + 1][j - 1] == backTable[i + 2][j - 2])
                         && (backTable[i + 2][j - 2] == backTable[i + 3][j - 3])) {
+                            int[][] elementsToFlashList = {
+                                {i + 3, j - 3}, {i + 2, j - 2}, {i + 1, j - 1}, {i, j}
+                            };
+                            flashElements(elementsToFlashList);
                     return backTable[i][j];
                 }
             }
@@ -173,10 +255,11 @@ public class Main {
         int menuPoint = 0;
         Scanner reader = new Scanner(System.in);
         do {
-            System.out.print("Choose a number:");
+            System.out.print("Choose a number: ");
             while (!reader.hasNextInt()) {
+                terminalControl.moveTo(25, 95);
                 System.out.print("That's not a number!");
-                System.out.print("Choose a number:");
+                System.out.print("Choose a number: ");
                 reader.next();
             }
             menuPoint = reader.nextInt();
@@ -185,10 +268,12 @@ public class Main {
     }
 
     public static String restart() {
+        Terminal terminalControl = new Terminal();
         Scanner reader = new Scanner(System.in);
         String restartOption;
         do {
-            System.out.print("Do you want to play again? Y/N");
+            terminalControl.moveTo(30, 95);
+            System.out.print("Do you want to play again? Y/N ");
             restartOption = reader.next();
         } while (!restartOption.equalsIgnoreCase("y") && !restartOption.equalsIgnoreCase("n"));
         return restartOption;
@@ -200,7 +285,7 @@ public class Main {
                 { "   4", "  44", " 4 4", "44444", "   4", "   4" }, { "5555", "5", "555", "   5", "   5", "555" },
                 { "   6", "  6", " 66", "6  6", "6  6", " 66" }, { "7777", "   7", "  7", " 7", "7", "7" } };
         Terminal terminalControl = new Terminal();
-        terminalControl.clearScreen();
+        //terminalControl.clearScreen();
         terminalControl.setColor(Color.CYAN);
         int X = 37;
         int Y = 15;
@@ -226,6 +311,24 @@ public class Main {
         System.out.print("\033[0;0m");
     }
 
+    static void displayNet() {
+        Terminal terminalControl = new Terminal();
+        terminalControl.moveTo(35, 10);
+        terminalControl.setColor(Color.WHITE);
+        for (int i = 0; i < 75; i++) {
+            terminalControl.setChar('_');
+        }
+        int startingX = 10;
+        int startingY = 22;
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 6; j++) {
+                terminalControl.moveTo(startingX + 5 * i, startingY + 10 * j);
+                terminalControl.setChar('+');
+            }
+        }
+        
+    }
+
     static int[] frontendCoordinates(int x, int y) {
         int[][][] coordinates = { { { 7, 15 }, { 7, 25 }, { 7, 35 }, { 7, 45 }, { 7, 55 }, { 7, 65 }, { 7, 75 } },
                 { { 12, 15 }, { 12, 25 }, { 12, 35 }, { 12, 45 }, { 12, 55 }, { 12, 65 }, { 12, 75 } },
@@ -239,6 +342,7 @@ public class Main {
     static void printEverything(String[][] backTable) {
         Terminal terminalControl = new Terminal();
         terminalControl.clearScreen();
+        displayNet();
         displayNumbersOfColumns();
         for (int i = 0; i < backTable.length; i++) {
             for (int j = 0; j < backTable[i].length; j++) {
@@ -316,9 +420,11 @@ public class Main {
             menuPoint = menu();
             if (menuPoint == 1) {
                 Scanner reader = new Scanner(System.in);
-                System.out.print("First Player enter your name:");
+                terminalControl.moveTo(30, 95);
+                System.out.print("First Player enter your name: ");
                 redPlayer = reader.next();
-                System.out.print("Second Player enter your name:");
+                terminalControl.moveTo(31, 95);
+                System.out.print("Second Player enter your name: ");
                 bluePlayer = reader.next();
                 printEverything(backTable);
                 while (true) {
@@ -371,7 +477,10 @@ public class Main {
                             if (restart.equalsIgnoreCase("y")) {
                                 break;
                             }
-                            if (restart.equalsIgnoreCase("n")) {
+                           
+                            if (restart.equalsIgnoreCase("n"))
+                            {
+                                terminalControl.clearScreen();
                                 System.exit(0);
                             }
                         }
@@ -401,7 +510,9 @@ public class Main {
                             if (restart.equalsIgnoreCase("y")) {
                                 break;
                             }
-                            if (restart.equalsIgnoreCase("n")) {
+                            if (restart.equalsIgnoreCase("n"))
+                            {
+                                terminalControl.clearScreen();
                                 System.exit(0);
                             }
                         }
@@ -430,5 +541,11 @@ public class Main {
                 System.exit(0);
             }
         }
+    }
+
+    public static void sleep(int time){
+        try{
+            Thread.sleep(time);
+        } catch (Exception e){}
     }
 }
