@@ -1,5 +1,13 @@
 import java.io.BufferedWriter;
 import java.util.Scanner;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.io.BufferedWriter;
+import java.lang.StringBuilder;
 import com.codecool.termlib.Terminal;
 
 import com.codecool.termlib.Color;
@@ -46,7 +54,6 @@ public class Main {
             System.out.print("\n\n");
         }
     }
-
 
     static int displayCircleForPlayerOne(String[][] frontTable, String[][] backTable, int step, String player) {
         Terminal terminalControl = new Terminal();
@@ -273,15 +280,10 @@ public class Main {
     }
 
     static void displayNumbersOfColumns() {
-        String[][] numbersToPrint = {
-            {"  1", " 11", "1 1", "  1", "  1", " 111"},
-            {" 22", "2  2", "   2", "  2", " 2", "2222"},
-            {" 33", "3  3", "  3", "  3", "3  3", " 33"},
-            {"   4", "  44", " 4 4", "44444", "   4", "   4"},
-            {"5555", "5", "555", "   5", "   5", "555"},
-            {"   6", "  6", " 66", "6  6", "6  6", " 66"},
-            {"7777", "   7", "  7", " 7", "7", "7"}
-        };
+        String[][] numbersToPrint = { { "  1", " 11", "1 1", "  1", "  1", " 111" },
+                { " 22", "2  2", "   2", "  2", " 2", "2222" }, { " 33", "3  3", "  3", "  3", "3  3", " 33" },
+                { "   4", "  44", " 4 4", "44444", "   4", "   4" }, { "5555", "5", "555", "   5", "   5", "555" },
+                { "   6", "  6", " 66", "6  6", "6  6", " 66" }, { "7777", "   7", "  7", " 7", "7", "7" } };
         Terminal terminalControl = new Terminal();
         //terminalControl.clearScreen();
         terminalControl.setColor(Color.CYAN);
@@ -328,14 +330,12 @@ public class Main {
     }
 
     static int[] frontendCoordinates(int x, int y) {
-        int[][][] coordinates = {
-            {{7, 15}, {7, 25}, {7, 35}, {7, 45}, {7, 55}, {7, 65}, {7, 75}},
-            {{12, 15}, {12, 25}, {12, 35}, {12, 45}, {12, 55}, {12, 65}, {12, 75}},
-            {{17, 15}, {17, 25}, {17, 35}, {17, 45}, {17, 55}, {17, 65}, {17, 75}},
-            {{22, 15}, {22, 25}, {22, 35}, {22, 45}, {22, 55}, {22, 65}, {22, 75}},
-            {{27, 15}, {27, 25}, {27, 35}, {27, 45}, {27, 55}, {27, 65}, {27, 75}},
-            {{32, 15}, {32, 25}, {32, 35}, {32, 45}, {32, 55}, {32, 65}, {32, 75}}
-        };
+        int[][][] coordinates = { { { 7, 15 }, { 7, 25 }, { 7, 35 }, { 7, 45 }, { 7, 55 }, { 7, 65 }, { 7, 75 } },
+                { { 12, 15 }, { 12, 25 }, { 12, 35 }, { 12, 45 }, { 12, 55 }, { 12, 65 }, { 12, 75 } },
+                { { 17, 15 }, { 17, 25 }, { 17, 35 }, { 17, 45 }, { 17, 55 }, { 17, 65 }, { 17, 75 } },
+                { { 22, 15 }, { 22, 25 }, { 22, 35 }, { 22, 45 }, { 22, 55 }, { 22, 65 }, { 22, 75 } },
+                { { 27, 15 }, { 27, 25 }, { 27, 35 }, { 27, 45 }, { 27, 55 }, { 27, 65 }, { 27, 75 } },
+                { { 32, 15 }, { 32, 25 }, { 32, 35 }, { 32, 45 }, { 32, 55 }, { 32, 65 }, { 32, 75 } } };
         return coordinates[x][y];
     }
 
@@ -355,9 +355,58 @@ public class Main {
         }
     }
 
+    public static List<String> readFile() {
+        String fileName = "Highscore.csv";
+        File file = new File(fileName);
+
+        // this gives you a 2-dimensional array of strings
+        List<List<String>> lines = new ArrayList<>();
+        Scanner inputStream;
+
+        try {
+            inputStream = new Scanner(file);
+
+            while (inputStream.hasNext()) {
+                String line = inputStream.next();
+                String[] values = line.split(",");
+                // this adds the currently parsed line to the 2-dimensional string array
+                lines.add(Arrays.asList(values));
+            }
+
+            inputStream.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        // the following code lets you iterate through the 2-dimensional array
+        List<String> scores = new ArrayList<>();
+        for (List<String> line : lines) {
+            for (String value : line) {
+                scores.add(value);
+            }
+        }
+        return scores;
+    }
+
+    public static void writeFile(List<String> scores) {
+        try {
+            BufferedWriter br = new BufferedWriter(new FileWriter("Highscore.csv"));
+            StringBuilder sb = new StringBuilder();
+            for (String element : scores) {
+                sb.append(element);
+                sb.append(",");
+            }
+            br.write(sb.toString());
+            br.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void main(String[] args) {
         while (true) {
             Terminal terminalControl = new Terminal();
+            List<String> scores = new ArrayList<>();
             terminalControl.clearScreen();
             String[][] frontTable = createFrontTable();
             String[][] backTable = createBackTable();
@@ -394,25 +443,41 @@ public class Main {
                         terminalControl.moveTo(20, 95);
                         System.out.print("Tie!");
                         restart = restart();
-                            if (restart.equalsIgnoreCase("y"))
-                            {
-                                break;
-                            }
-                            if (restart.equalsIgnoreCase("n"))
-                            {
-                                System.exit(0);
-                            }
+                        if (restart.equalsIgnoreCase("y")) {
+                            break;
+                        }
+                        if (restart.equalsIgnoreCase("n")) {
+                            System.exit(0);
+                        }
                     }
                     if (winner != null) {
                         if (winner == "R") {
                             printEverything(backTable);
                             terminalControl.moveTo(10, 95);
                             System.out.print(redPlayer + " won!");
+                            boolean newName = true;
+                            scores = readFile();
+                            for (int i = 0; i < scores.size(); i++){
+                                if (scores.get(i).equals(redPlayer)){
+                                    String pointsString = scores.get(i+1);
+                                    int points = Integer.parseInt(pointsString);
+                                    points += 1;
+                                    pointsString = String.valueOf(points);
+                                    scores.set(i+1, pointsString);
+                                    newName = false;
+                                    break;
+                                }
+                            }
+                            if (newName) {
+                                scores.add(redPlayer);
+                                scores.add("1");
+                            }
+                            writeFile(scores);
                             restart = restart();
-                            if (restart.equalsIgnoreCase("y"))
-                            {
+                            if (restart.equalsIgnoreCase("y")) {
                                 break;
                             }
+                           
                             if (restart.equalsIgnoreCase("n"))
                             {
                                 terminalControl.clearScreen();
@@ -423,9 +488,26 @@ public class Main {
                             printEverything(backTable);
                             terminalControl.moveTo(10, 95);
                             System.out.print(bluePlayer + " won!");
+                            boolean newName = true;
+                            scores = readFile();
+                            for (int i = 0; i < scores.size(); i++){
+                                if (scores.get(i).equals(bluePlayer)){
+                                    String pointsString = scores.get(i+1);
+                                    int points = Integer.parseInt(pointsString);
+                                    points += 1;
+                                    pointsString = String.valueOf(points);
+                                    scores.set(i+1, pointsString);
+                                    newName = false;
+                                    break;
+                                }
+                            }
+                            if (newName) {
+                                scores.add(bluePlayer);
+                                scores.add("1");
+                            }
+                            writeFile(scores);
                             restart = restart();
-                            if (restart.equalsIgnoreCase("y"))
-                            {
+                            if (restart.equalsIgnoreCase("y")) {
                                 break;
                             }
                             if (restart.equalsIgnoreCase("n"))
@@ -439,7 +521,20 @@ public class Main {
                 }
             }
             if (menuPoint == 2) {
-                System.out.print("SCOREBOARD");
+                System.out.print("SCOREBOARD\n");
+                scores = readFile();
+                int disparity = 0;
+                for (String data : scores) {
+                    System.out.print(data + " ");
+                    if (disparity % 2 == 1) {
+                        System.out.print("\n");
+                    }
+                    disparity++;
+                }
+                try {
+                    Thread.sleep(3000);
+                } catch (Exception e) {
+                }
             }
             if (menuPoint == 3) {
                 terminalControl.clearScreen();
