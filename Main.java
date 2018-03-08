@@ -1,3 +1,4 @@
+import java.io.BufferedWriter;
 import java.util.Scanner;
 import com.codecool.termlib.Terminal;
 
@@ -351,6 +352,7 @@ public class Main {
                             }
                             if (restart.equalsIgnoreCase("n"))
                             {
+                                terminalControl.clearScreen();
                                 System.exit(0);
                             }
                         }
@@ -365,6 +367,7 @@ public class Main {
                             }
                             if (restart.equalsIgnoreCase("n"))
                             {
+                                terminalControl.clearScreen();
                                 System.exit(0);
                             }
                         }
@@ -376,6 +379,7 @@ public class Main {
                 System.out.print("SCOREBOARD");
             }
             if (menuPoint == 3) {
+                terminalControl.clearScreen();
                 System.exit(0);
             }
         }
