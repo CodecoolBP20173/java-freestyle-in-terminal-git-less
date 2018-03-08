@@ -250,6 +250,7 @@ public class Main {
         do {
             System.out.print("Choose a number: ");
             while (!reader.hasNextInt()) {
+                terminalControl.moveTo(25, 95);
                 System.out.print("That's not a number!");
                 System.out.print("Choose a number: ");
                 reader.next();
@@ -270,7 +271,7 @@ public class Main {
         } while (!restartOption.equalsIgnoreCase("y") && !restartOption.equalsIgnoreCase("n"));
         return restartOption;
     }
-  
+
     static void displayNumbersOfColumns() {
         String[][] numbersToPrint = {
             {"  1", " 11", "1 1", "  1", "  1", " 111"},
@@ -282,7 +283,7 @@ public class Main {
             {"7777", "   7", "  7", " 7", "7", "7"}
         };
         Terminal terminalControl = new Terminal();
-        terminalControl.clearScreen();
+        //terminalControl.clearScreen();
         terminalControl.setColor(Color.CYAN);
         int X = 37;
         int Y = 15;
@@ -308,6 +309,24 @@ public class Main {
         System.out.print("\033[0;0m");
     }
 
+    static void displayNet() {
+        Terminal terminalControl = new Terminal();
+        terminalControl.moveTo(35, 10);
+        terminalControl.setColor(Color.WHITE);
+        for (int i = 0; i < 75; i++) {
+            terminalControl.setChar('_');
+        }
+        int startingX = 10;
+        int startingY = 22;
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 6; j++) {
+                terminalControl.moveTo(startingX + 5 * i, startingY + 10 * j);
+                terminalControl.setChar('+');
+            }
+        }
+        
+    }
+
     static int[] frontendCoordinates(int x, int y) {
         int[][][] coordinates = {
             {{7, 15}, {7, 25}, {7, 35}, {7, 45}, {7, 55}, {7, 65}, {7, 75}},
@@ -323,6 +342,7 @@ public class Main {
     static void printEverything(String[][] backTable) {
         Terminal terminalControl = new Terminal();
         terminalControl.clearScreen();
+        displayNet();
         displayNumbersOfColumns();
         for (int i = 0; i < backTable.length; i++) {
             for (int j = 0; j < backTable[i].length; j++) {
