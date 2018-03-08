@@ -65,17 +65,22 @@ public class Main {
             terminalControl.moveTo(22, 95);
             System.out.print("Choose a column (1-7): ");
             while (!reader.hasNextInt()) {
+                terminalControl.moveTo(25, 95);
                 System.out.print("That's not a number!");
                 System.out.print("Choose a column (1-7): ");
                 reader.next();
             }
             columnToDrop = reader.nextInt();
+            if (columnToDrop > 7){
+                terminalControl.moveTo(25, 95);
+                System.out.print("That's not a valid number!");
+              }
         } while (columnToDrop <= 0 || columnToDrop >= 8);
         --columnToDrop;
         for (int i = 5; i >= 0; i--) {
             if (backTable[i][columnToDrop] == null) {
                 int coordinateY = (columnToDrop * 10) + 15;
-                int columnCoordinate = columnToDrop -1;
+                int columnCoordinate = columnToDrop - 1;
                 moveNewElement(Color.RED, coordinateY, columnToDrop, backTable);
                 backTable[i][columnToDrop] = "R";
                 frontTable[i][columnToDrop] = "R ";
@@ -83,7 +88,13 @@ public class Main {
                 break;
             }
             if (i == 0 && backTable[i][columnToDrop] != null) {
-                System.out.print("This column is full, choose another one!");
+                terminalControl.moveTo(27, 95);
+                System.out.print("This column is full, choose another one! ");
+                try{
+                    Thread.sleep(3000);
+                } catch (Exception e) {
+
+                }
             }
         }
         return step;
@@ -96,17 +107,18 @@ public class Main {
             if (backTable[i][columnCoordinate] != null && !backTable[i][columnCoordinate].isEmpty()) {
                 nextEmptySlot = i - 1;
                 break;
-            } 
+            }
         }
-        int[] xCoordinatesList = {7, 12, 17, 22, 27, 32};
+        int[] xCoordinatesList = { 7, 12, 17, 22, 27, 32 };
         int xGoal = xCoordinatesList[nextEmptySlot];
         int x = 2;
-        while (x <= xGoal-2) {
+        while (x <= xGoal - 2) {
             System.out.print("\033[?25l");
             displayElement(x, coordinateY, color);
-            try{
+            try {
                 Thread.sleep(40);
-            } catch (Exception e){}
+            } catch (Exception e) {
+            }
             terminalControl.moveTo(x, coordinateY);
             System.out.print("\033[0;0m");
             for (int i = 0; i < 5; i++) {
@@ -127,17 +139,22 @@ public class Main {
             terminalControl.moveTo(22, 95);
             System.out.print("Choose a column (1-7): ");
             while (!reader.hasNextInt()) {
+                terminalControl.moveTo(25, 95);
                 System.out.print("That's not a number!");
                 System.out.print("Choose a column (1-7): ");
                 reader.next();
             }
             columnToDrop = reader.nextInt();
+            if (columnToDrop > 7){
+                terminalControl.moveTo(25, 95);
+                System.out.print("That's not a valid number!");
+            }
         } while (columnToDrop <= 0 || columnToDrop >= 8);
         --columnToDrop;
         for (int i = 5; i >= 0; i--) {
             if (backTable[i][columnToDrop] == null) {
                 int coordinateY = (columnToDrop * 10) + 15;
-                int columnCoordinate = columnToDrop -1;
+                int columnCoordinate = columnToDrop - 1;
                 moveNewElement(Color.BLUE, coordinateY, columnToDrop, backTable);
                 backTable[i][columnToDrop] = "B";
                 frontTable[i][columnToDrop] = "B ";
@@ -145,14 +162,20 @@ public class Main {
                 break;
             }
             if (i == 0 && backTable[i][columnToDrop] != null) {
-                System.out.print("This column is full, choose another one!");
+                terminalControl.moveTo(27, 95);
+                System.out.print("This column is full, choose another one! ");
+               try{
+                    Thread.sleep(3000);
+                } catch (Exception e) {
+                    
+                }
             }
         }
         return step;
     }
 
     static void flashElements(int[][] elementsCoordinates) {
-        int[][] frontendCoordinatesToFlash = new int [4][2];
+        int[][] frontendCoordinatesToFlash = new int[4][2];
         for (int i = 0; i < elementsCoordinates.length; i++) {
             frontendCoordinatesToFlash[i] = frontendCoordinates(elementsCoordinates[i][0], elementsCoordinates[i][1]);
         }
@@ -163,9 +186,10 @@ public class Main {
             for (int i = 0; i < frontendCoordinatesToFlash.length; i++) {
                 displayElement(frontendCoordinatesToFlash[i][0], frontendCoordinatesToFlash[i][1], flashColor);
             }
-            try{
+            try {
                 Thread.sleep(700);
-            } catch (Exception e){}
+            } catch (Exception e) {
+            }
             if (flashColor == Color.GREEN) {
                 flashColor = Color.YELLOW;
             } else {
@@ -184,10 +208,8 @@ public class Main {
                         && (backTable[i][j + 3] != null) && (backTable[i][j] == backTable[i][j + 1])
                         && (backTable[i][j + 1] == backTable[i][j + 2])
                         && (backTable[i][j + 2] == backTable[i][j + 3])) {
-                        int[][] elementsToFlashList = {
-                            {i, j}, {i, j + 1}, {i, j + 2}, {i, j + 3}
-                        };
-                        flashElements(elementsToFlashList);
+                    int[][] elementsToFlashList = { { i, j }, { i, j + 1 }, { i, j + 2 }, { i, j + 3 } };
+                    flashElements(elementsToFlashList);
                     return backTable[i][j];
                 }
             }
@@ -199,10 +221,8 @@ public class Main {
                         && (backTable[i + 3][j] != null) && (backTable[i][j] == backTable[i + 1][j])
                         && (backTable[i + 1][j] == backTable[i + 2][j])
                         && (backTable[i + 2][j] == backTable[i + 3][j])) {
-                            int[][] elementsToFlashList = {
-                                {i + 3, j}, {i + 2, j}, {i + 1, j}, {i, j}
-                            };
-                            flashElements(elementsToFlashList);    
+                    int[][] elementsToFlashList = { { i + 3, j }, { i + 2, j }, { i + 1, j }, { i, j } };
+                    flashElements(elementsToFlashList);
                     return backTable[i][j];
                 }
             }
@@ -214,10 +234,8 @@ public class Main {
                         && (backTable[i + 3][j + 3] != null) && (backTable[i][j] == backTable[i + 1][j + 1])
                         && (backTable[i + 1][j + 1] == backTable[i + 2][j + 2])
                         && (backTable[i + 2][j + 2] == backTable[i + 3][j + 3])) {
-                            int[][] elementsToFlashList = {
-                                {i + 3, j + 3}, {i + 2, j + 2}, {i + 1, j + 1}, {i, j}
-                            };
-                            flashElements(elementsToFlashList);
+                    int[][] elementsToFlashList = { { i + 3, j + 3 }, { i + 2, j + 2 }, { i + 1, j + 1 }, { i, j } };
+                    flashElements(elementsToFlashList);
                     return backTable[i][j];
                 }
             }
@@ -229,10 +247,8 @@ public class Main {
                         && (backTable[i + 3][j - 3] != null) && (backTable[i][j] == backTable[i + 1][j - 1])
                         && (backTable[i + 1][j - 1] == backTable[i + 2][j - 2])
                         && (backTable[i + 2][j - 2] == backTable[i + 3][j - 3])) {
-                            int[][] elementsToFlashList = {
-                                {i + 3, j - 3}, {i + 2, j - 2}, {i + 1, j - 1}, {i, j}
-                            };
-                            flashElements(elementsToFlashList);
+                    int[][] elementsToFlashList = { { i + 3, j - 3 }, { i + 2, j - 2 }, { i + 1, j - 1 }, { i, j } };
+                    flashElements(elementsToFlashList);
                     return backTable[i][j];
                 }
             }
@@ -275,6 +291,10 @@ public class Main {
             terminalControl.moveTo(30, 95);
             System.out.print("Do you want to play again? Y/N ");
             restartOption = reader.next();
+            if(!restartOption.equalsIgnoreCase("y") && !restartOption.equalsIgnoreCase("n")){
+                terminalControl.moveTo(32, 95);
+                System.out.print("Y/N as you can read...");
+            }
         } while (!restartOption.equalsIgnoreCase("y") && !restartOption.equalsIgnoreCase("n"));
         return restartOption;
     }
@@ -318,15 +338,15 @@ public class Main {
         for (int i = 0; i < 75; i++) {
             terminalControl.setChar('_');
         }
-        int startingX = 10;
-        int startingY = 22;
-        for (int i = 0; i < 5; i++) {
-            for (int j = 0; j < 6; j++) {
+        int startingX = 5;
+        int startingY = 12;
+        for (int i = 0; i < 6; i++) {
+            for (int j = 0; j < 8; j++) {
                 terminalControl.moveTo(startingX + 5 * i, startingY + 10 * j);
                 terminalControl.setChar('+');
             }
         }
-        
+
     }
 
     static int[] frontendCoordinates(int x, int y) {
@@ -457,13 +477,13 @@ public class Main {
                             System.out.print(redPlayer + " won!");
                             boolean newName = true;
                             scores = readFile();
-                            for (int i = 0; i < scores.size(); i++){
-                                if (scores.get(i).equals(redPlayer)){
-                                    String pointsString = scores.get(i+1);
+                            for (int i = 0; i < scores.size(); i++) {
+                                if (scores.get(i).equals(redPlayer)) {
+                                    String pointsString = scores.get(i + 1);
                                     int points = Integer.parseInt(pointsString);
                                     points += 1;
                                     pointsString = String.valueOf(points);
-                                    scores.set(i+1, pointsString);
+                                    scores.set(i + 1, pointsString);
                                     newName = false;
                                     break;
                                 }
@@ -477,9 +497,8 @@ public class Main {
                             if (restart.equalsIgnoreCase("y")) {
                                 break;
                             }
-                           
-                            if (restart.equalsIgnoreCase("n"))
-                            {
+
+                            if (restart.equalsIgnoreCase("n")) {
                                 terminalControl.clearScreen();
                                 System.exit(0);
                             }
@@ -490,13 +509,13 @@ public class Main {
                             System.out.print(bluePlayer + " won!");
                             boolean newName = true;
                             scores = readFile();
-                            for (int i = 0; i < scores.size(); i++){
-                                if (scores.get(i).equals(bluePlayer)){
-                                    String pointsString = scores.get(i+1);
+                            for (int i = 0; i < scores.size(); i++) {
+                                if (scores.get(i).equals(bluePlayer)) {
+                                    String pointsString = scores.get(i + 1);
                                     int points = Integer.parseInt(pointsString);
                                     points += 1;
                                     pointsString = String.valueOf(points);
-                                    scores.set(i+1, pointsString);
+                                    scores.set(i + 1, pointsString);
                                     newName = false;
                                     break;
                                 }
@@ -510,8 +529,7 @@ public class Main {
                             if (restart.equalsIgnoreCase("y")) {
                                 break;
                             }
-                            if (restart.equalsIgnoreCase("n"))
-                            {
+                            if (restart.equalsIgnoreCase("n")) {
                                 terminalControl.clearScreen();
                                 System.exit(0);
                             }
@@ -543,9 +561,10 @@ public class Main {
         }
     }
 
-    public static void sleep(int time){
-        try{
+    public static void sleep(int time) {
+        try {
             Thread.sleep(time);
-        } catch (Exception e){}
+        } catch (Exception e) {
+        }
     }
 }
