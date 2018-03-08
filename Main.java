@@ -9,6 +9,9 @@ import java.util.List;
 import java.io.BufferedWriter;
 import java.lang.StringBuilder;
 import com.codecool.termlib.Terminal;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 
 import com.codecool.termlib.Color;
 import com.codecool.termlib.Direction;
@@ -30,6 +33,20 @@ public class Main {
 
         return frontTable;
     }
+
+    static void playSound() {
+    try {
+        AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File("music.wav"));
+        Clip clip = AudioSystem.getClip();
+        clip.open(audioInputStream);
+        clip.loop(-1);
+        clip.start();
+    } catch(Exception ex) {
+        System.out.println("Error with playing sound.");
+        ex.printStackTrace();
+    }
+}
+
 
     static String[][] createBackTable() {
         String[][] backTable = new String[6][7];
@@ -419,6 +436,7 @@ public class Main {
 
             menuPoint = menu();
             if (menuPoint == 1) {
+                playSound();
                 Scanner reader = new Scanner(System.in);
                 terminalControl.moveTo(30, 95);
                 System.out.print("First Player enter your name: ");
