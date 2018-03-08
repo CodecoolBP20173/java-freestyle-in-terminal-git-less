@@ -557,18 +557,29 @@ public class Main {
                 }
             }
             if (menuPoint == 2) {
+                terminalControl.moveTo(30, 95);
                 System.out.print("SCOREBOARD\n");
                 scores = readFile();
                 int disparity = 0;
+                int xCoordinate = 32;
+                String namePlusScore = "";
                 for (String data : scores) {
-                    System.out.print(data + " ");
+                    if (disparity % 2 == 0) {
+                        terminalControl.moveTo(xCoordinate, 95);
+                        namePlusScore = data + ": ";
+
+                    }
+                    
                     if (disparity % 2 == 1) {
-                        System.out.print("\n");
+                        namePlusScore += data;
+                        System.out.print(namePlusScore);
+                        xCoordinate++;
                     }
                     disparity++;
+                    
                 }
                 try {
-                    Thread.sleep(3000);
+                    Thread.sleep(5000);
                 } catch (Exception e) {
                 }
             }
