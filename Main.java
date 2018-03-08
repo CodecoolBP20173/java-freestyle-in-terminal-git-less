@@ -94,6 +94,7 @@ public class Main {
         int xGoal = xCoordinatesList[nextEmptySlot];
         int x = 2;
         while (x <= xGoal-2) {
+            System.out.print("\033[?25l");
             displayElement(x, coordinateY, color);
             try{
                 Thread.sleep(40);
@@ -105,6 +106,7 @@ public class Main {
             }
             x += 1;
         }
+        System.out.print("\033[?25h");
     }
 
     static int displayCircleForPlayerTwo(String[][] frontTable, String[][] backTable, int step, String player) {
@@ -141,6 +143,31 @@ public class Main {
         return step;
     }
 
+    static void flashElements(int[][] elementsCoordinates) {
+        int[][] frontendCoordinatesToFlash = new int [4][2];
+        for (int i = 0; i < elementsCoordinates.length; i++) {
+            frontendCoordinatesToFlash[i] = frontendCoordinates(elementsCoordinates[i][0], elementsCoordinates[i][1]);
+        }
+        int loop = 0;
+        Color flashColor = Color.GREEN;
+        while (loop < 5) {
+            System.out.print("\033[?25l");
+            for (int i = 0; i < frontendCoordinatesToFlash.length; i++) {
+                displayElement(frontendCoordinatesToFlash[i][0], frontendCoordinatesToFlash[i][1], flashColor);
+            }
+            try{
+                Thread.sleep(700);
+            } catch (Exception e){}
+            if (flashColor == Color.GREEN) {
+                flashColor = Color.YELLOW;
+            } else {
+                flashColor = Color.GREEN;
+            }
+            loop += 1;
+        }
+        System.out.print("\033[?25h");
+    }
+
     static String winCheck(String[][] backTable) {
         //Horizontal Check
         for (int i = 0; i < 6; i++) {
@@ -149,6 +176,10 @@ public class Main {
                         && (backTable[i][j + 3] != null) && (backTable[i][j] == backTable[i][j + 1])
                         && (backTable[i][j + 1] == backTable[i][j + 2])
                         && (backTable[i][j + 2] == backTable[i][j + 3])) {
+                        int[][] elementsToFlashList = {
+                            {i, j}, {i, j + 1}, {i, j + 2}, {i, j + 3}
+                        };
+                        flashElements(elementsToFlashList);
                     return backTable[i][j];
                 }
             }
@@ -160,6 +191,10 @@ public class Main {
                         && (backTable[i + 3][j] != null) && (backTable[i][j] == backTable[i + 1][j])
                         && (backTable[i + 1][j] == backTable[i + 2][j])
                         && (backTable[i + 2][j] == backTable[i + 3][j])) {
+                            int[][] elementsToFlashList = {
+                                {i + 3, j}, {i + 2, j}, {i + 1, j}, {i, j}
+                            };
+                            flashElements(elementsToFlashList);    
                     return backTable[i][j];
                 }
             }
@@ -171,6 +206,10 @@ public class Main {
                         && (backTable[i + 3][j + 3] != null) && (backTable[i][j] == backTable[i + 1][j + 1])
                         && (backTable[i + 1][j + 1] == backTable[i + 2][j + 2])
                         && (backTable[i + 2][j + 2] == backTable[i + 3][j + 3])) {
+                            int[][] elementsToFlashList = {
+                                {i + 3, j + 3}, {i + 2, j + 2}, {i + 1, j + 1}, {i, j}
+                            };
+                            flashElements(elementsToFlashList);
                     return backTable[i][j];
                 }
             }
@@ -182,6 +221,10 @@ public class Main {
                         && (backTable[i + 3][j - 3] != null) && (backTable[i][j] == backTable[i + 1][j - 1])
                         && (backTable[i + 1][j - 1] == backTable[i + 2][j - 2])
                         && (backTable[i + 2][j - 2] == backTable[i + 3][j - 3])) {
+                            int[][] elementsToFlashList = {
+                                {i + 3, j - 3}, {i + 2, j - 2}, {i + 1, j - 1}, {i, j}
+                            };
+                            flashElements(elementsToFlashList);
                     return backTable[i][j];
                 }
             }
