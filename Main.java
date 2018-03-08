@@ -1,5 +1,6 @@
 import java.util.Scanner;
 import com.codecool.termlib.Terminal;
+
 import com.codecool.termlib.Color;
 import com.codecool.termlib.Direction;
 import com.codecool.termlib.Attribute;
@@ -23,6 +24,11 @@ public class Main {
 
     static String[][] createBackTable() {
         String[][] backTable = new String[6][7];
+        //for (int i = 0; i < backTable.length; i++) {
+        //    for (int j = 0; j < backTable[i].length; j++) {
+        //        backTable[i][j] = "not_null";
+        //    }
+        //}
 
         return backTable;
     }
@@ -49,10 +55,10 @@ public class Main {
         int columnToDrop;
         do {
             terminalControl.moveTo(22, 95);
-            System.out.print("Choose a column (1-7):");
+            System.out.print("Choose a column (1-7): ");
             while (!reader.hasNextInt()) {
                 System.out.print("That's not a number!");
-                System.out.print("Choose a column (1-7):");
+                System.out.print("Choose a column (1-7): ");
                 reader.next();
             }
             columnToDrop = reader.nextInt();
@@ -60,6 +66,9 @@ public class Main {
         --columnToDrop;
         for (int i = 5; i >= 0; i--) {
             if (backTable[i][columnToDrop] == null) {
+                int coordinateY = (columnToDrop * 10) + 15;
+                int columnCoordinate = columnToDrop -1;
+                moveNewElement(Color.RED, coordinateY, columnToDrop, backTable);
                 backTable[i][columnToDrop] = "R";
                 frontTable[i][columnToDrop] = "R ";
                 step++;
@@ -72,6 +81,31 @@ public class Main {
         return step;
     }
 
+    static void moveNewElement(Color color, int coordinateY, int columnCoordinate, String[][] backTable) {
+        Terminal terminalControl = new Terminal();
+        int nextEmptySlot = 5;
+        for (int i = 0; i < backTable.length; i++) {
+            if (backTable[i][columnCoordinate] != null && !backTable[i][columnCoordinate].isEmpty()) {
+                nextEmptySlot = i - 1;
+                break;
+            } 
+        }
+        int[] xCoordinatesList = {7, 12, 17, 22, 27, 32};
+        int xGoal = xCoordinatesList[nextEmptySlot];
+        int x = 2;
+        while (x <= xGoal-2) {
+            displayElement(x, coordinateY, color);
+            try{
+                Thread.sleep(40);
+            } catch (Exception e){}
+            terminalControl.moveTo(x, coordinateY);
+            System.out.print("\033[0;0m");
+            for (int i = 0; i < 5; i++) {
+                terminalControl.setChar(' ');
+            }
+            x += 1;
+        }
+    }
 
     static int displayCircleForPlayerTwo(String[][] frontTable, String[][] backTable, int step, String player) {
         Terminal terminalControl = new Terminal();
@@ -81,10 +115,10 @@ public class Main {
         int columnToDrop;
         do {
             terminalControl.moveTo(22, 95);
-            System.out.print("Choose a column (1-7):");
+            System.out.print("Choose a column (1-7): ");
             while (!reader.hasNextInt()) {
                 System.out.print("That's not a number!");
-                System.out.print("Choose a column (1-7):");
+                System.out.print("Choose a column (1-7): ");
                 reader.next();
             }
             columnToDrop = reader.nextInt();
@@ -92,6 +126,9 @@ public class Main {
         --columnToDrop;
         for (int i = 5; i >= 0; i--) {
             if (backTable[i][columnToDrop] == null) {
+                int coordinateY = (columnToDrop * 10) + 15;
+                int columnCoordinate = columnToDrop -1;
+                moveNewElement(Color.BLUE, coordinateY, columnToDrop, backTable);
                 backTable[i][columnToDrop] = "B";
                 frontTable[i][columnToDrop] = "B ";
                 step++;
@@ -167,10 +204,10 @@ public class Main {
         int menuPoint = 0;
         Scanner reader = new Scanner(System.in);
         do {
-            System.out.print("Choose a number:");
+            System.out.print("Choose a number: ");
             while (!reader.hasNextInt()) {
                 System.out.print("That's not a number!");
-                System.out.print("Choose a number:");
+                System.out.print("Choose a number: ");
                 reader.next();
             }
             menuPoint = reader.nextInt();
@@ -179,10 +216,12 @@ public class Main {
     }
 
     public static String restart() {
+        Terminal terminalControl = new Terminal();
         Scanner reader = new Scanner(System.in);
         String restartOption;
         do {
-            System.out.print("Do you want to play again? Y/N");
+            terminalControl.moveTo(30, 95);
+            System.out.print("Do you want to play again? Y/N ");
             restartOption = reader.next();
         } while (!restartOption.equalsIgnoreCase("y") && !restartOption.equalsIgnoreCase("n"));
         return restartOption;
@@ -268,9 +307,11 @@ public class Main {
             menuPoint = menu();
             if (menuPoint == 1) {
                 Scanner reader = new Scanner(System.in);
-                System.out.print("First Player enter your name:");
+                terminalControl.moveTo(30, 95);
+                System.out.print("First Player enter your name: ");
                 redPlayer = reader.next();
-                System.out.print("Second Player enter your name:");
+                terminalControl.moveTo(31, 95);
+                System.out.print("Second Player enter your name: ");
                 bluePlayer = reader.next();
                 printEverything(backTable);
                 while (true) {
@@ -338,5 +379,11 @@ public class Main {
                 System.exit(0);
             }
         }
+    }
+
+    public static void sleep(int time){
+        try{
+            Thread.sleep(time);
+        } catch (Exception e){}
     }
 }
